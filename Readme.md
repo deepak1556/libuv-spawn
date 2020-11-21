@@ -23,44 +23,10 @@ $ security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k pass `pw
 
 ```sh
 $ security find-identity -v `pwd`/uv_test.keychain
-$ codesign --sign <identity-from-previous-step>  --force --keychain `pwd`/uv_test.keychain --entitlements `pwd`/app-entitlements.plist `pwd`/out/Default/uv_spawn
+$ codesign --sign <identity-from-previous-step>  --force --options runtime --keychain `pwd`/uv_test.keychain --entitlements `pwd`/app-entitlements.plist `pwd`/out/Default/uv_spawn
 ```
 
 ### Results
-
-* Without MAP_JIT : `./out/Default/uv_spawn`
-
-```
-ls process launched with ID : 6115 and in : 1.44147 ms
-ls process exited with status : 0 and in : 5.09804 ms
-
-ls process launched with ID : 6116 and in : 1.321 ms
-ls process exited with status : 0 and in : 4.88865 ms
-
-ls process launched with ID : 6117 and in : 1.18874 ms
-ls process exited with status : 0 and in : 4.4697 ms
-
-ls process launched with ID : 6118 and in : 1.16868 ms
-ls process exited with status : 0 and in : 4.45456 ms
-
-ls process launched with ID : 6119 and in : 1.14751 ms
-ls process exited with status : 0 and in : 4.61297 ms
-
-ls process launched with ID : 6120 and in : 1.1754 ms
-ls process exited with status : 0 and in : 4.50136 ms
-
-ls process launched with ID : 6121 and in : 1.13239 ms
-ls process exited with status : 0 and in : 4.40179 ms
-
-ls process launched with ID : 6122 and in : 1.12352 ms
-ls process exited with status : 0 and in : 4.73885 ms
-
-ls process launched with ID : 6123 and in : 1.70062 ms
-ls process exited with status : 0 and in : 5.73448 ms
-
-ls process launched with ID : 6124 and in : 1.19278 ms
-ls process exited with status : 0 and in : 4.56495 ms
-```
 
 * With MAP_JIT : `./out/Default/uv_spawn --use-jit`
 
@@ -94,4 +60,41 @@ ls process exited with status : 0 and in : 68.6403 ms
 
 ls process launched with ID : 6070 and in : 65.2823 ms
 ls process exited with status : 0 and in : 69.0946 ms
+```
+
+* Without MAP_JIT : `./out/Default/uv_spawn`
+
+The hardened runtime will prevent W^X allocation, remove the codesignature
+using `codesign --remove-signature ./out/Default/uv_spawn`
+
+```
+ls process launched with ID : 6115 and in : 1.44147 ms
+ls process exited with status : 0 and in : 5.09804 ms
+
+ls process launched with ID : 6116 and in : 1.321 ms
+ls process exited with status : 0 and in : 4.88865 ms
+
+ls process launched with ID : 6117 and in : 1.18874 ms
+ls process exited with status : 0 and in : 4.4697 ms
+
+ls process launched with ID : 6118 and in : 1.16868 ms
+ls process exited with status : 0 and in : 4.45456 ms
+
+ls process launched with ID : 6119 and in : 1.14751 ms
+ls process exited with status : 0 and in : 4.61297 ms
+
+ls process launched with ID : 6120 and in : 1.1754 ms
+ls process exited with status : 0 and in : 4.50136 ms
+
+ls process launched with ID : 6121 and in : 1.13239 ms
+ls process exited with status : 0 and in : 4.40179 ms
+
+ls process launched with ID : 6122 and in : 1.12352 ms
+ls process exited with status : 0 and in : 4.73885 ms
+
+ls process launched with ID : 6123 and in : 1.70062 ms
+ls process exited with status : 0 and in : 5.73448 ms
+
+ls process launched with ID : 6124 and in : 1.19278 ms
+ls process exited with status : 0 and in : 4.56495 ms
 ```

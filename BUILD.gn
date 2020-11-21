@@ -1,0 +1,114 @@
+config("libuv_config") {
+  include_dirs = [ "//libuv/include" ]
+
+  defines = []
+
+  if (is_mac) {
+    defines += [ "_DARWIN_USE_64_BIT_INODE=1" ]
+  }
+}
+
+static_library("uv") {
+  include_dirs = [
+    "//libuv/include",
+    "//libuv/src",
+  ]
+
+  public_configs = [ ":libuv_config" ]
+
+  libs = []
+  ldflags = []
+
+  defines = []
+
+  cflags_c = [
+    "-Wno-incompatible-pointer-types",
+    "-Wno-bitwise-op-parentheses",
+    "-Wno-implicit-function-declaration",
+    "-Wno-missing-braces",
+    "-Wno-sign-compare",
+    "-Wno-sometimes-uninitialized",
+    "-Wno-string-conversion",
+    "-Wno-switch",
+    "-Wno-unused-function",
+    "-Wno-unused-variable",
+    "-Wno-unreachable-code",
+  ]
+
+  libs = []
+
+  sources = [
+    "//libuv/include/uv.h",
+    "//libuv/include/uv/aix.h",
+    "//libuv/include/uv/bsd.h",
+    "//libuv/include/uv/darwin.h",
+    "//libuv/include/uv/errno.h",
+    "//libuv/include/uv/linux.h",
+    "//libuv/include/uv/sunos.h",
+    "//libuv/include/uv/threadpool.h",
+    "//libuv/include/uv/tree.h",
+    "//libuv/include/uv/unix.h",
+    "//libuv/include/uv/version.h",
+    "//libuv/src/fs-poll.c",
+    "//libuv/src/heap-inl.h",
+    "//libuv/src/idna.c",
+    "//libuv/src/idna.h",
+    "//libuv/src/inet.c",
+    "//libuv/src/queue.h",
+    "//libuv/src/random.c",
+    "//libuv/src/strscpy.c",
+    "//libuv/src/strscpy.h",
+    "//libuv/src/threadpool.c",
+    "//libuv/src/timer.c",
+    "//libuv/src/unix/async.c",
+    "//libuv/src/unix/atomic-ops.h",
+    "//libuv/src/unix/core.c",
+    "//libuv/src/unix/dl.c",
+    "//libuv/src/unix/fs.c",
+    "//libuv/src/unix/getaddrinfo.c",
+    "//libuv/src/unix/getnameinfo.c",
+    "//libuv/src/unix/internal.h",
+    "//libuv/src/unix/loop-watcher.c",
+    "//libuv/src/unix/loop.c",
+    "//libuv/src/unix/pipe.c",
+    "//libuv/src/unix/poll.c",
+    "//libuv/src/unix/process.c",
+    "//libuv/src/unix/proctitle.c",
+    "//libuv/src/unix/pthread-fixes.c",
+    "//libuv/src/unix/random-devurandom.c",
+    "//libuv/src/unix/signal.c",
+    "//libuv/src/unix/spinlock.h",
+    "//libuv/src/unix/stream.c",
+    "//libuv/src/unix/tcp.c",
+    "//libuv/src/unix/thread.c",
+    "//libuv/src/unix/tty.c",
+    "//libuv/src/unix/udp.c",
+    "//libuv/src/uv-common.c",
+    "//libuv/src/uv-common.h",
+    "//libuv/src/uv-data-getter-setters.c",
+    "//libuv/src/version.c",
+  ]
+
+  libs += [ "m" ]
+  ldflags += [ "-pthread" ]
+
+  if (is_mac) {
+    sources += [
+      "//libuv/src/unix/bsd-ifaddrs.c",
+      "//libuv/src/unix/darwin-proctitle.c",
+      "//libuv/src/unix/darwin.c",
+      "//libuv/src/unix/fsevents.c",
+      "//libuv/src/unix/kqueue.c",
+      "//libuv/src/unix/random-getentropy.c",
+    ]
+    defines += [
+      "_DARWIN_USE_64_BIT_INODE=1",
+      "_DARWIN_UNLIMITED_SELECT=1",
+    ]
+  }
+}
+
+executable("uv_spawn") {
+  sources = [ "spawn.cc" ]
+  deps = [ ":uv" ]
+}

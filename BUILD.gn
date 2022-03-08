@@ -2,10 +2,6 @@ config("libuv_config") {
   include_dirs = [ "//libuv/include" ]
 
   defines = []
-
-  if (is_mac) {
-    defines += [ "_DARWIN_USE_64_BIT_INODE=1" ]
-  }
 }
 
 static_library("uv") {
@@ -16,14 +12,14 @@ static_library("uv") {
 
   public_configs = [ ":libuv_config" ]
 
-  libs = []
   ldflags = []
 
-  defines = []
+  defines = [ "BUILDING_UV_SHARED=1" ]
 
   cflags_c = [
     "-Wno-incompatible-pointer-types",
     "-Wno-bitwise-op-parentheses",
+    "-Wno-implicit-fallthrough",
     "-Wno-implicit-function-declaration",
     "-Wno-missing-braces",
     "-Wno-sign-compare",
@@ -33,82 +29,87 @@ static_library("uv") {
     "-Wno-unused-function",
     "-Wno-unused-variable",
     "-Wno-unreachable-code",
+    "-Wno-unreachable-code-return",
+    "-Wno-unused-but-set-variable",
+    "-Wno-shadow",
   ]
 
   libs = []
 
   sources = [
-    "//libuv/include/uv.h",
-    "//libuv/include/uv/aix.h",
-    "//libuv/include/uv/bsd.h",
-    "//libuv/include/uv/darwin.h",
-    "//libuv/include/uv/errno.h",
-    "//libuv/include/uv/linux.h",
-    "//libuv/include/uv/sunos.h",
-    "//libuv/include/uv/threadpool.h",
-    "//libuv/include/uv/tree.h",
-    "//libuv/include/uv/unix.h",
-    "//libuv/include/uv/version.h",
-    "//libuv/src/fs-poll.c",
-    "//libuv/src/heap-inl.h",
-    "//libuv/src/idna.c",
-    "//libuv/src/idna.h",
-    "//libuv/src/inet.c",
-    "//libuv/src/queue.h",
-    "//libuv/src/random.c",
-    "//libuv/src/strscpy.c",
-    "//libuv/src/strscpy.h",
-    "//libuv/src/threadpool.c",
-    "//libuv/src/timer.c",
-    "//libuv/src/unix/async.c",
-    "//libuv/src/unix/atomic-ops.h",
-    "//libuv/src/unix/core.c",
-    "//libuv/src/unix/dl.c",
-    "//libuv/src/unix/fs.c",
-    "//libuv/src/unix/getaddrinfo.c",
-    "//libuv/src/unix/getnameinfo.c",
-    "//libuv/src/unix/internal.h",
-    "//libuv/src/unix/loop-watcher.c",
-    "//libuv/src/unix/loop.c",
-    "//libuv/src/unix/pipe.c",
-    "//libuv/src/unix/poll.c",
-    "//libuv/src/unix/process.c",
-    "//libuv/src/unix/proctitle.c",
-    "//libuv/src/unix/pthread-fixes.c",
-    "//libuv/src/unix/random-devurandom.c",
-    "//libuv/src/unix/signal.c",
-    "//libuv/src/unix/spinlock.h",
-    "//libuv/src/unix/stream.c",
-    "//libuv/src/unix/tcp.c",
-    "//libuv/src/unix/thread.c",
-    "//libuv/src/unix/tty.c",
-    "//libuv/src/unix/udp.c",
-    "//libuv/src/uv-common.c",
-    "//libuv/src/uv-common.h",
-    "//libuv/src/uv-data-getter-setters.c",
-    "//libuv/src/version.c",
+    "include/uv.h",
+    "include/uv/errno.h",
+    "include/uv/threadpool.h",
+    "include/uv/tree.h",
+    "include/uv/version.h",
+    "src/fs-poll.c",
+    "src/heap-inl.h",
+    "src/idna.c",
+    "src/idna.h",
+    "src/inet.c",
+    "src/queue.h",
+    "src/random.c",
+    "src/strscpy.c",
+    "src/strscpy.h",
+    "src/threadpool.c",
+    "src/timer.c",
+    "src/uv-common.c",
+    "src/uv-common.h",
+    "src/uv-data-getter-setters.c",
+    "src/version.c",
   ]
 
-  libs += [ "m" ]
-  ldflags += [ "-pthread" ]
-
-  if (is_mac) {
+  if (is_win) {
+    defines += [ "_GNU_SOURCE" ]
     sources += [
-      "//libuv/src/unix/bsd-ifaddrs.c",
-      "//libuv/src/unix/darwin-proctitle.c",
-      "//libuv/src/unix/darwin.c",
-      "//libuv/src/unix/fsevents.c",
-      "//libuv/src/unix/kqueue.c",
-      "//libuv/src/unix/random-getentropy.c",
+      "include/uv/win.h",
+      "src/win/async.c",
+      "src/win/atomicops-inl.h",
+      "src/win/core.c",
+      "src/win/detect-wakeup.c",
+      "src/win/dl.c",
+      "src/win/error.c",
+      "src/win/fs-event.c",
+      "src/win/fs.c",
+      "src/win/getaddrinfo.c",
+      "src/win/getnameinfo.c",
+      "src/win/handle-inl.h",
+      "src/win/handle.c",
+      "src/win/internal.h",
+      "src/win/loop-watcher.c",
+      "src/win/pipe.c",
+      "src/win/poll.c",
+      "src/win/process-stdio.c",
+      "src/win/process.c",
+      "src/win/req-inl.h",
+      "src/win/signal.c",
+      "src/win/snprintf.c",
+      "src/win/stream-inl.h",
+      "src/win/stream.c",
+      "src/win/tcp.c",
+      "src/win/thread.c",
+      "src/win/tty.c",
+      "src/win/udp.c",
+      "src/win/util.c",
+      "src/win/winapi.c",
+      "src/win/winapi.h",
+      "src/win/winsock.c",
+      "src/win/winsock.h",
     ]
-    defines += [
-      "_DARWIN_USE_64_BIT_INODE=1",
-      "_DARWIN_UNLIMITED_SELECT=1",
+
+    libs += [
+      "advapi32.lib",
+      "iphlpapi.lib",
+      "psapi.lib",
+      "shell32.lib",
+      "user32.lib",
+      "userenv.lib",
+      "ws2_32.lib",
     ]
   }
 }
 
 executable("uv_spawn") {
-  sources = [ "spawn.cc" ]
+  sources = [ "iocp-integration.cc" ]
   deps = [ ":uv" ]
 }
